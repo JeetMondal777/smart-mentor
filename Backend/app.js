@@ -5,7 +5,12 @@ const youtubeCaptions = require('youtube-captions-scraper');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+}));
 app.use(express.json());
 
 app.post('/api/extract-captions', async (req, res) => {
