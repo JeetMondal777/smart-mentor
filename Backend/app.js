@@ -28,7 +28,7 @@ app.post('/api/extract-captions', async (req, res) => {
       return res.status(404).json({ error: 'No captions available for this video' });
     }
     
-    console.log(captions);
+    console.log(captions);  // For debugging
     res.status(200).json({ transcript: captions });
   } catch (err) {
     console.error('Error extracting captions:', err.message);
@@ -44,11 +44,16 @@ function extractVideoID(url) {
 
 async function getCaptions(videoId) {
   try {
-    // Use ScraperAPI to fetch the page content with the YouTube video URL
+    // Fetch page content using ScraperAPI
     const proxyUrl = `http://api.scraperapi.com?api_key=${process.env.SCRAPER_API_KEY}&url=https://www.youtube.com/watch?v=${videoId}`;
+    
+    // Logging the proxy URL and response to verify
+    console.log(`Fetching data from: ${proxyUrl}`);
+    
     const response = await axios.get(proxyUrl);
+    console.log('ScraperAPI Response:', response.data);  // Check if the response is HTML
 
-    // Use the response data to scrape captions
+    // If ScraperAPI response is good, fetch captions
     const captionData = await youtubeCaptions.getSubtitles({
       videoID: videoId,
       lang: 'en',
@@ -61,6 +66,8 @@ async function getCaptions(videoId) {
     const transcript = captionData.map(caption => caption.text).join(' ');
     return transcript;
   } catch (err) {
+    // Log the error for debugging
+    console.error('Error fetching captions:', err);
     throw new Error('Failed to fetch captions from YouTube');
   }
 }
