@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
 const youtubeCaptions = require('youtube-captions-scraper');
 require('dotenv').config();
 
 const app = express();
-console.log(process.env.CLIENT_URL);
 
 app.use(cors({
     origin: process.env.CLIENT_URL,
@@ -43,23 +43,22 @@ function extractVideoID(url) {
 }
 
 async function getCaptions(videoId) {
-  const proxyUrl = `http://api.scraperapi.com?api_key=${process.env.SCRAPER_API_KEY}&url=https://www.youtube.com/watch?v=${videoId}`;
-
   try {
-    // Fetch captions using the youtube-captions-scraper module with proxy
+    // Use ScraperAPI to fetch the page content with the YouTube video URL
+    const proxyUrl = `http://api.scraperapi.com?api_key=${process.env.SCRAPER_API_KEY}&url=https://www.youtube.com/watch?v=${videoId}`;
+    const response = await axios.get(proxyUrl);
+
+    // Use the response data to scrape captions
     const captionData = await youtubeCaptions.getSubtitles({
       videoID: videoId,
       lang: 'en',
-      proxy: proxyUrl,  // Adding the proxy URL
     });
 
     if (!captionData || captionData.length === 0) {
       throw new Error('No captions found');
     }
 
-    // Extract the transcript from caption data
     const transcript = captionData.map(caption => caption.text).join(' ');
-
     return transcript;
   } catch (err) {
     throw new Error('Failed to fetch captions from YouTube');
