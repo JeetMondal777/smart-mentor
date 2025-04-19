@@ -43,11 +43,14 @@ function extractVideoID(url) {
 }
 
 async function getCaptions(videoId) {
+  const proxyUrl = `http://api.scraperapi.com?api_key=${process.env.SCRAPER_API_KEY}&url=https://www.youtube.com/watch?v=${videoId}`;
+
   try {
-    // Fetch captions using the youtube-captions-scraper module
+    // Fetch captions using the youtube-captions-scraper module with proxy
     const captionData = await youtubeCaptions.getSubtitles({
       videoID: videoId,
       lang: 'en',
+      proxy: proxyUrl,  // Adding the proxy URL
     });
 
     if (!captionData || captionData.length === 0) {
@@ -56,7 +59,7 @@ async function getCaptions(videoId) {
 
     // Extract the transcript from caption data
     const transcript = captionData.map(caption => caption.text).join(' ');
-    
+
     return transcript;
   } catch (err) {
     throw new Error('Failed to fetch captions from YouTube');
