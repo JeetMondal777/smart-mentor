@@ -1,10 +1,11 @@
 const express = require('express');
-const axios = require('axios');
 const cors = require('cors');
 const youtubeCaptions = require('youtube-captions-scraper');
 require('dotenv').config();
 
 const app = express();
+console.log(process.env.CLIENT_URL);
+
 app.use(cors({
     origin: process.env.CLIENT_URL,
     methods: ['GET', 'POST'],
