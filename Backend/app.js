@@ -15,26 +15,34 @@ app.use(cors({
 app.use(express.json());
 
 app.post('/api/extract-captions', async (req, res) => {
-  const { videoUrl } = req.body;
-  const videoId = extractVideoID(videoUrl);
-
-  if (!videoId) {
-    return res.status(400).json({ error: 'Invalid YouTube URL' });
-  }
-
   try {
-    const captions = await getCaptions(videoId);
-    if (!captions) {
-      return res.status(404).json({ error: 'No captions available for this video' });
+    const { videoUrl } = req.body;
+    console.log("Incoming video URL:", videoUrl);
+
+    if (!videoUrl) {
+      return res.status(400).json({ error: "Missing video URL" });
     }
-    
-    console.log(captions);  // For debugging
-    res.status(200).json({ transcript: captions });
+
+    const videoID = getYouTubeID(videoUrl);  // custom function you created
+    console.log("Extracted video ID:", videoID);
+
+    const captions = await youtubeCaptions.getSubtitles({
+      videoID,
+      lang: 'en'
+    });
+
+    if (!captions || captions.length === 0) {
+      return res.status(404).json({ error: 'No captions found' });
+    }
+
+    res.json(captions);
+
   } catch (err) {
-    console.error('Error extracting captions:', err.message);
-    res.status(500).json({ error: 'Failed to extract captions' });
+    console.error("🔥 ERROR in /api/extract-captions:", err);
+    res.status(500).json({ error: "Internal Server Error", details: err.message });
   }
 });
+
 
 function extractVideoID(url) {
   const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/;
