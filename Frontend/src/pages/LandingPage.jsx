@@ -26,19 +26,21 @@ export default function LandingPage() {
 
   const handleGenerate = async () => {
     if (!videoUrl) return;
-
+  
     setLoading(true);
     setTranscript('');
     setShowOptions(false);
     setGeneratedNotes('');
     setMockTest(null);
     setShowResults(false);
-
+  
     try {
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/extract-captions`, { videoUrl });
       if (res.status === 200) {
-        setTranscript(res.data.transcript);
-        console.log(res.data.text);
+        // Convert the array of caption objects into a single string
+        const transcriptText = res.data.map(item => item.text).join(' ');
+        setTranscript(transcriptText); // Set the generated transcript text
+        console.log(transcript);
         
         setShowOptions(true);
       }
@@ -48,6 +50,7 @@ export default function LandingPage() {
       setLoading(false);
     }
   };
+  
 
   const getCachedNotes = () => localStorage.getItem(cacheKey);
 

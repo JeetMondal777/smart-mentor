@@ -14,36 +14,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-app.post('/api/extract-captions', async (req, res) => {
-  try {
-    const { videoUrl } = req.body;
-    console.log("Incoming video URL:", videoUrl);
-
-    if (!videoUrl) {
-      return res.status(400).json({ error: "Missing video URL" });
-    }
-
-    const videoID = getYouTubeID(videoUrl);  // custom function you created
-    console.log("Extracted video ID:", videoID);
-
-    const captions = await youtubeCaptions.getSubtitles({
-      videoID,
-      lang: 'en'
-    });
-
-    if (!captions || captions.length === 0) {
-      return res.status(404).json({ error: 'No captions found' });
-    }
-
-    res.json(captions);
-
-  } catch (err) {
-    console.error("🔥 ERROR in /api/extract-captions:", err);
-    res.status(500).json({ error: "Internal Server Error", details: err.message });
-  }
-});
-
-
 function extractVideoID(url) {
   const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/;
   const match = url.match(regex);
@@ -80,10 +50,41 @@ async function getCaptions(videoId) {
   }
 }
 
+app.post('/api/extract-captions', async (req, res) => {
+  try {
+    const { videoUrl } = req.body;
+    console.log("Incoming video URL:", videoUrl);
+
+    if (!videoUrl) {
+      return res.status(400).json({ error: "Missing video URL" });
+    }
+
+    const videoID = extractVideoID(videoUrl);  // custom function you created
+    console.log("Extracted video ID:", videoID);
+
+    const captions = await youtubeCaptions.getSubtitles({
+      videoID,
+      lang: 'en'
+    });
+
+    if (!captions || captions.length === 0) {
+      return res.status(404).json({ error: 'No captions found' });
+    }
+    console.log(captions);
+    
+    res.json(captions);
+
+  } catch (err) {
+    console.error("🔥 ERROR in /api/extract-captions:", err);
+    res.status(500).json({ error: "Internal Server Error", details: err.message });
+  }
+});
+
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log('Server is running on port 3000');
 });
