@@ -38,6 +38,8 @@ export default function LandingPage() {
       const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/extract-captions`, { videoUrl });
       if (res.status === 200) {
         setTranscript(res.data.transcript);
+        console.log(res);
+        
         setShowOptions(true);
       }
     } catch (err) {
