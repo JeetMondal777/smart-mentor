@@ -81,7 +81,7 @@ export default function LandingPage() {
             { role: 'system', content: `You are a professional teacher who makes great in-depth notes.` },
             {
               role: 'user',
-              content: `Here is the extracted captions from a YouTube video:\n\n"${transcript}"\n\nNow, focusing on the key points and structure, generate in-depth, well-organized notes in markdown format that cover all the aspects mentioned, try to make theory wise in detailed notes with the keypoints but don't add the code as it is from the caption try to manipulate it by your own so that user can understand better from it. Make sure to include examples and explanations where necessary. The notes should be clear, very much detailed, to the point, concise, and easy to follow and don't just rely on the captions. Use your own understanding and knowledge to create this.`,
+              content: `Here is the extracted captions from a YouTube video:\n\n"${transcript}"\n\nNow, focusing on the key points and structure, generate in-depth, well-organized notes in markdown format that cover all the aspects mentioned, try to make theory wise in detailed notes with the keypoints but don't add the code as it is from the caption try to manipulate it by your own so that user can understand better from it. Make sure to include examples and explanations where necessary. The notes should be clear, very much detailed, to the point, concise, and easy to follow and don't just rely on the captions. Use your own understanding and knowledge to create this and cover all the aspects related to the center point of the video.`,
             },
           ],
         }),
